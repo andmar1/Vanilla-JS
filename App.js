@@ -18,7 +18,7 @@ class UI{
                     <strong>Product Name</strong>: ${product.name}
                     <strong>Product Price</strong>: ${product.price}
                     <strong>Product Year</strong>: ${product.year}
-                    <a href="#" class= "btn btn-danger">Delete</a>
+                    <a href="#" class= "btn btn-danger" name="delete">Delete</a>
                 </div>
             </div>
         `;
@@ -30,11 +30,28 @@ class UI{
         document.getElementById('product-form').reset();
     }   
 
-    deleteProduct(){
+    deleteProduct(element){
+        if (element.name === 'delete') {
+            // buscar elementos padres
+            element.parentElement.parentElement.parentElement.remove()
+            this.showMessage('Product Deleted Successfully','info')
+        }
 
     }
-    showMessage(){
+    // cssClass, to see if it is success or error 
+    showMessage(message, cssClass){
+        const div = document.createElement('div');
+        div.className = `alert alert-${cssClass} mt-2`;
+        div.appendChild(document.createTextNode(message));   
+        //Showing in DOM
+        const container = document.querySelector('.container');
+        const app = document.querySelector('#App');
 
+        container.insertBefore(div, app);
+        // Quitar mensaje despues de 3 seg 
+        setTimeout(function(){
+            document.querySelector('.alert').remove();
+        }, 3000);
     }
 }
 
@@ -51,11 +68,24 @@ document.getElementById('product-form')
 
         //Creando instancia para acceder a metodos de UI
         const ui = new UI();
+
+        if (name ==='' || price==='' || year==='') {
+            // return, agregar para que no continua con las demas funciones
+            return ui.showMessage('Complete Fields Please','danger')
+        }
         ui.addProduct(product)
         // tambien podemos resetear la carta desde aqui
         // ui.resetForm();
+        // Mostrar el mensaje una vez que agregamos la nueva tarjeta 
+        ui.showMessage('Product Added Succesfully', 'success');
+
 
         //Cancela el comportamiento por Default
         e.preventDefault()
 });
 
+
+document.getElementById('product-list').addEventListener('click', function(e){
+    const ui = new UI()
+    ui.deleteProduct(e.target)
+})
